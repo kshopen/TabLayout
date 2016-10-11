@@ -56,17 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                /* switch(tab.getPosition()) {
-                    case 0 :
-                        Toast.makeText(context, "Todo", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1 :
-                        Toast.makeText(context, "Info", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 2 :
-                        Toast.makeText(context, "Debt", Toast.LENGTH_SHORT).show();
-                        break;
-                }*/
+
             }
 
             @Override
