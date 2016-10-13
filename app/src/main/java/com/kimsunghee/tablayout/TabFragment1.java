@@ -27,6 +27,8 @@ public class TabFragment1 extends Fragment {
     private ArrayList<Memo> getMemo() {
         ArrayList<Memo> memos = new ArrayList<>();
 
+
+        // 데이터베이스에 있는 Cursor 객체를 받아서 ArrayList에 담는 작업을 해줘야 한다. 
         Memo memo = new Memo("1");
 
         memos.add(memo);

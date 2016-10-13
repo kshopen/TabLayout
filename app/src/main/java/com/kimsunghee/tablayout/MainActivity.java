@@ -11,12 +11,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private void openDB() {
         try {
             databaseHelper = new DatabaseHelper(getApplicationContext(), databaseName, null, 1);
-            database = databaseHelper.getWritableDatabase();
+            database = databaseHelper.getWritableDatabase();    // getWritableDatabase() : DB를 읽거나 쓸수 있는 권한을 부여
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -113,22 +114,43 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(context, "showData 호출", Toast.LENGTH_SHORT).show();
         try {
             if (database != null) {
+                /*
+
+               SQLiteStatement stmt = database.compileStatement("SELECT * FROM " + tableName);
+                stmt.execute();
+
                 Cursor cursor = database.rawQuery("SELECT _id, memo FROM " + tableName, null);
 
-                startManagingCursor(cursor);    // 메모리 이슈가 있어서 커서 안쓰고,
+                //startManagingCursor(cursor);    // 메모리 이슈가 있어서 커서 안쓰고, CursorLoader with a LoaderManager를 쓴다
 
                 String[] columns = new String[]{"memo"};    // DB에 들어가 있는 칼럼 이름
                 int[] to = new int[]{R.id.memocontent};
 
                 SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, R.layout.content, cursor, columns, to);
 
+                */
+
+/*
+
+                    database.beginTransaction();
+                try{
+                    Cursor cursor = database.rawQuery("SELECT _id, memo FROM " + tableName, null);
+                    database.setTransactionSuccessful();
+                } catch (SQLException e){
+                } finally {
+                    database.endTransaction();
+                }
+
                 listView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+
+*/                // database.close();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     // 4. 메모 추가하기
@@ -173,7 +195,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 7. 데이터를 ArrayList에 추가하기
-
-
+    //
+    public String[] getContacts(){
+        Cursor cursor = database.rawQuery("SELECT name FROM contacts", null);
+        cursor.moveToFirst();
+        ArrayList<String> names = new ArrayList<String>();
+        while(!cursor.isAfterLast()) {
+            names.add(cursor.getString(cursor.getColumnIndex("name")));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return names.toArray(new String[names.size()]);
+    }
 }
