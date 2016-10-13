@@ -17,8 +17,6 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -130,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
                 */
 
-/*
+
 
                     database.beginTransaction();
                 try{
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 listView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
 
-*/                // database.close();
+              // database.close();
             }
 
         } catch (Exception e) {
@@ -185,26 +183,17 @@ public class MainActivity extends AppCompatActivity {
     // 6. DB의 테이블에 데이터 추가하기
     public void addData(String tableName) {
         Toast.makeText(context, "addData 호출", Toast.LENGTH_SHORT).show();
+        database.beginTransaction();
         try {
             if (database != null) {
                 database.execSQL("INSERT INTO " + tableName + "(memo) VALUES "
                         + "(" + memo + ")");
+                database.setTransactionSuccessful();
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            database.endTransaction();
         }
-    }
-
-    //
-    public String[] getContacts(){
-        Cursor cursor = database.rawQuery("SELECT name FROM contacts", null);
-        cursor.moveToFirst();
-        ArrayList<String> names = new ArrayList<String>();
-        while(!cursor.isAfterLast()) {
-            names.add(cursor.getString(cursor.getColumnIndex("name")));
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return names.toArray(new String[names.size()]);
     }
 }

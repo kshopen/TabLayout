@@ -3,6 +3,7 @@ package com.kimsunghee.tablayout;
 /**
  * Created by Kimsunghee on 2016. 10. 10..
  */
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -23,19 +24,17 @@ public class TabFragment3 extends Fragment {
         return view;
     }
 
-    private ArrayList<Memo> getMemo() {
+    private ArrayList<Memo> getMemo(){
+        Memo memo =  null;
+        Cursor cursor = database.rawQuery("SELECT * FROM todoTable", null);
+        cursor.moveToFirst();
         ArrayList<Memo> memos = new ArrayList<>();
-
-        Memo memo = new Memo("7");
-
-        memos.add(memo);
-
-        memo = new Memo("8");
-        memos.add(memo);
-
-        memo = new Memo("9");
-        memos.add(memo);
-
+        while(!cursor.isAfterLast()) {
+            memo = new Memo(cursor.getString(cursor.getColumnIndex("memo")));
+            memos.add(memo);
+            cursor.moveToNext();
+        }
+        cursor.close();
         return memos;
     }
 }
