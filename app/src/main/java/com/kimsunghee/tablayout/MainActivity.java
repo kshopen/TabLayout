@@ -6,15 +6,14 @@ package com.kimsunghee.tablayout;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.Toast;
 
 
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         openDB();
-        createTable();
         addMemo();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -73,82 +71,11 @@ public class MainActivity extends AppCompatActivity {
     // 1. DB 생성 및 열기
     private void openDB() {
         try {
-            databaseHelper = new DatabaseHelper(getApplicationContext(), databaseName, null, 1);
+            databaseHelper = new DatabaseHelper(getApplicationContext(), databaseName, null, 1);    // DB생성
             database = databaseHelper.getWritableDatabase();    // getWritableDatabase() : DB를 읽거나 쓸수 있는 권한을 부여
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    // 2. 테이블 만들기
-    public void createTable() {
-        // Toast.makeText(context, "createTable()", Toast.LENGTH_LONG).show();
-        try {
-            if (database != null) {
-                database.execSQL("CREATE TABLE if not exists " + "todoTable" + "("
-                        + "_id integer PRIMARY KEY autoincrement, "
-                        + "memo text"
-                        + ")");
-                database.execSQL("CREATE TABLE if not exists " + "infoTable" + "("
-                        + "_id integer PRIMARY KEY autoincrement, "
-                        + "memo text"
-                        + ")");
-                database.execSQL("CREATE TABLE if not exists " + "debtTable" + "("
-                        + "_id integer PRIMARY KEY autoincrement, "
-                        + "memo text"
-                        + ")");
-                database.execSQL("CREATE TABLE if not exists " + "etcTable" + "("
-                        + "_id integer PRIMARY KEY autoincrement, "
-                        + "memo text"
-                        + ")");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 3. 데이터 보여주기
-    public void showData(ListView listView, String tableName) {
-        Toast.makeText(context, "showData 호출", Toast.LENGTH_SHORT).show();
-        try {
-            if (database != null) {
-                /*
-
-               SQLiteStatement stmt = database.compileStatement("SELECT * FROM " + tableName);
-                stmt.execute();
-
-                Cursor cursor = database.rawQuery("SELECT _id, memo FROM " + tableName, null);
-
-                //startManagingCursor(cursor);    // 메모리 이슈가 있어서 커서 안쓰고, CursorLoader with a LoaderManager를 쓴다
-
-                String[] columns = new String[]{"memo"};    // DB에 들어가 있는 칼럼 이름
-                int[] to = new int[]{R.id.memocontent};
-
-                SimpleCursorAdapter adapter = new SimpleCursorAdapter(context, R.layout.content, cursor, columns, to);
-
-                */
-
-
-
-                    database.beginTransaction();
-                try{
-                    Cursor cursor = database.rawQuery("SELECT _id, memo FROM " + tableName, null);
-                    database.setTransactionSuccessful();
-                } catch (SQLException e){
-                } finally {
-                    database.endTransaction();
-                }
-
-                listView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-
-              // database.close();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     // 4. 메모 추가하기
@@ -186,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
         database.beginTransaction();
         try {
             if (database != null) {
-                database.execSQL("INSERT INTO " + tableName + "(memo) VALUES "
-                        + "(" + memo + ")");
+                SQLiteStatement stmt = database.compileStatement("INSERT INTO " + tableName + "(memo) VALUES " + "(" + memo + ")");
+                stmt.execute();
                 database.setTransactionSuccessful();
             }
         } catch (Exception e) {
@@ -196,4 +123,5 @@ public class MainActivity extends AppCompatActivity {
             database.endTransaction();
         }
     }
+
 }
