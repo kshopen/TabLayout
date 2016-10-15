@@ -3,7 +3,6 @@ package com.kimsunghee.tablayout;
 /**
  * Created by Kimsunghee on 2016. 10. 10..
  */
-
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,7 +16,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class TabFragment1 extends Fragment {
+public class TabFragment4 extends Fragment {
 
     private SQLiteDatabase database;
 
@@ -33,7 +32,7 @@ public class TabFragment1 extends Fragment {
                 try {
                     if (database != null) {
                         SQLiteStatement stmt = database.compileStatement(
-                                "CREATE TABLE if not exists " + "todoTable" + "("
+                                "CREATE TABLE if not exists " + "etcTable" + "("
                                         + "_id integer PRIMARY KEY autoincrement, "
                                         + "memo text"
                                         + ")");
@@ -60,8 +59,8 @@ public class TabFragment1 extends Fragment {
 
         database = opener.getWritableDatabase();
 
-        View view = inflater.inflate(R.layout.tab_fragment_1, null);
-        ListView listView = (ListView) view.findViewById(R.id.ListView1);
+        View view = inflater.inflate(R.layout.tab_fragment_4, null);
+        ListView listView = (ListView) view.findViewById(R.id.ListView4);
         ListViewAdapter adapter = new ListViewAdapter(this.getContext(),getMemo());
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
@@ -70,7 +69,7 @@ public class TabFragment1 extends Fragment {
 
     private ArrayList<Memo> getMemo(){
         Memo memo =  null;
-        Cursor cursor = database.rawQuery("SELECT * FROM todoTable", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM etcTable", null);
         cursor.moveToFirst();
         ArrayList<Memo> memos = new ArrayList<>();
         while(!cursor.isAfterLast()) {

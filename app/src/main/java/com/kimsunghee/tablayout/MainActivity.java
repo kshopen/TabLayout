@@ -7,7 +7,6 @@ package com.kimsunghee.tablayout;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -43,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("TODO"));
         tabLayout.addTab(tabLayout.newTab().setText("INFO"));
         tabLayout.addTab(tabLayout.newTab().setText("DEBT"));
+        tabLayout.addTab(tabLayout.newTab().setText("ETC"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);    // 너비를 모두 같게 나누어 표시
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     // 1. DB 생성 및 열기
@@ -78,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // 4. 메모 추가하기
-    public void addMemo() {
+    // 2. 메모 추가하기 버튼
+    private void addMemo() {
         findViewById(R.id.addmemo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,39 +90,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 5. MemoActivity로부터 인텐트 받아서 데이터 추가하기
+    // 3. 데이터 추가 결과 받아서 뷰페이저 갱신
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == 1001) {
         }
         if (resultCode == RESULT_OK) {
-            memo = intent.getExtras().getString("memo");    // 메모 내용 받아서 memo에 담기
+            memo = intent.getExtras().getString("memo");    // 메모 내용 받아서 String 타입의 memo 변수에 담기
             String tableName = intent.getExtras().getString("tableName");   // 메모 타입 받아서 tableName 으로 세팅하기
             Toast.makeText(context, "테이블명: " + tableName + " / 내용: " + memo, Toast.LENGTH_SHORT).show();
-
-            if (memo.equals("")) {
-                Toast.makeText(context, "메모를 입력하지 않았습니다.", Toast.LENGTH_SHORT).show();
-            } else {
-                addData(tableName);
+            if (intent.getBooleanExtra("result",false)) {
+                // (질문) onActivityResult에서 갱신 flag가 true이면 뷰페이져를 갱신(뷰페이져에 물려잇는 프레그먼트들에게 db에서 select 다시해서 화면 다시 그리라고 알림)
             }
         }
     }
-
-    // 6. DB의 테이블에 데이터 추가하기
-    public void addData(String tableName) {
-        Toast.makeText(context, "addData 호출", Toast.LENGTH_SHORT).show();
-        database.beginTransaction();
-        try {
-            if (database != null) {
-                SQLiteStatement stmt = database.compileStatement("INSERT INTO " + tableName + "(memo) VALUES " + "(" + memo + ")");
-                stmt.execute();
-                database.setTransactionSuccessful();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            database.endTransaction();
-        }
-    }
-
 }
+

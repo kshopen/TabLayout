@@ -4,9 +4,9 @@ package com.kimsunghee.tablayout;
  * Created by Kimsunghee on 2016. 10. 10..
  */
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,25 +19,30 @@ import java.util.ArrayList;
 public class TabFragment3 extends Fragment {
 
     private SQLiteDatabase database;
-    private DatabaseHelper databaseHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // DB Open 코드
         SQLiteOpenHelper opener = new SQLiteOpenHelper(this.getContext(), "memo1.db", null, 1) {
+
             @Override
             public void onCreate(SQLiteDatabase sqLiteDatabase) {
+                database.beginTransaction();
                 try {
                     if (database != null) {
-                        database.execSQL("CREATE TABLE if not exists " + "todoTable" + "("
-                                + "_id integer PRIMARY KEY autoincrement, "
-                                + "memo text"
-                                + ")");
-
+                        SQLiteStatement stmt = database.compileStatement(
+                                "CREATE TABLE if not exists " + "debtTable" + "("
+                                        + "_id integer PRIMARY KEY autoincrement, "
+                                        + "memo text"
+                                        + ")");
+                        stmt.execute();
+                        database.setTransactionSuccessful();
                     }
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    database.endTransaction();
                 }
             }
 
@@ -57,6 +62,7 @@ public class TabFragment3 extends Fragment {
         View view = inflater.inflate(R.layout.tab_fragment_3, null);
         ListView listView = (ListView) view.findViewById(R.id.ListView3);
         ListViewAdapter adapter = new ListViewAdapter(this.getContext(),getMemo());
+        adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
         return view;
     }
